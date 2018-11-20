@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+import csv
+import os
+from datetime import datetime
+from calibre.web.feeds.news import BasicNewsRecipe
+
+
+FEEDS_CSV = os.environ.get('FEEDS_CSV', '/feeds.csv')
+
+
+def from_file(feeds_file):
+    with open(feeds_file) as csvfeeds:
+        return [(author, url) for author, url in csv.reader(csvfeeds)]
+
+
+class Rss2KindleRecipe(BasicNewsRecipe):
+    title = 'RSS ' +  datetime.now().strftime('%y-%m-%d')
+    oldest_article = os.environ.get('OLDEST_ARTICLE', 7)
+    max_articles_per_feed = 100
+    auto_cleanup = True
+    remove_empty_feeds = True
+
+    feeds = from_file(FEEDS_CSV)
